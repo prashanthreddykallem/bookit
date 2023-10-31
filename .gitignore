@@ -83,3 +83,6 @@ $RECYCLE.BIN/
 
 # Database
 mysql/*
+
+# env files
+.env

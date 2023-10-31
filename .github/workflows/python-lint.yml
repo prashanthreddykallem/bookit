@@ -1,0 +1,17 @@
+name: Python lint
+
+on: [push, pull_request]
+  
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2  
+    - name: Python Linter
+      uses: sunnysid3up/python-linter@master
+      with:
+        source: "api"
+        pylint-options: "--rcfile=.pylintrc"
+        django: false
+        strict: ""

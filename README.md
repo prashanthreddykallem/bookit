@@ -66,6 +66,8 @@ running smoothly: http://localhost:5000/healthcheck
 The app frontend will run on port `8181`so you can access it at:
 `http://localhost:8181/`.
 
+![demo img](demo.jpg)
+
 ## Dev environment
 
 After the initial setup, you just need to `docker compose up -d` to start the

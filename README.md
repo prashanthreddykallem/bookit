@@ -1,4 +1,4 @@
-# Booking
+# Bookit
 
 A full booking solution to manage and grow your business.
 Packed with all the tools you need to boost sales, manage your calendar and
@@ -77,7 +77,7 @@ You can always use `docker ps` to check if the containers are running.
 
 ## Contribute
 
-If you want to contribute please check the [issues page](issues). There you will
+If you want to contribute please check the [issues page](https://github.com/mariogarridopt/bookit/issues). There you will
 find all the things we want to be done. Add your code to a branch/fork and
 create a Pull Request.
 

@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  api:
+    container_name: api
+    build: ./api
+    restart: on-failure
+    env_file:
+      - .env
+    volumes:
+      - ./api:/python-docker
+    ports:
+      - 5000:5000
+#  website:
+#    container_name: website
+#    build: ./frontend
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./frontend:/usr/share/nginx/html
+#    ports:
+#      - 8181:80
+  database:
+    container_name: database
+    image: mysql:8
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    env_file:
+      - .env
+    ports:
+      - 3306:3306
+    volumes:
+        - "./mysql:/var/lib/mysql:rw"

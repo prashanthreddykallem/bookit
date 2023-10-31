@@ -2,14 +2,15 @@ import os
 import mysql.connector
 from mysql.connector import Error
 
-# Each Flask web application contains a secret key which used to sign session cookies for protection against cookie data tampering.
+# Each Flask web application contains a secret key which used to sign session
+# cookies for protection against cookie data tampering.
 SECRET_KEY = os.urandom(32)
 
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Enable debug mode, that will refresh the page when you make changes.
-DEBUG = os.getenv('DEBUG', True)
+DEBUG = os.getenv('DEBUG', "True")
 
 # Connect to the MYSQL database
 MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
@@ -29,5 +30,4 @@ def get_db():
     except Error as e:
         print(f"Error while connecting to MySQL: {e}")
         return None
-
-    
+  

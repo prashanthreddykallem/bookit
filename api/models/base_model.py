@@ -1,34 +1,40 @@
+import dataclasses
 import config
 
+@dataclasses.dataclass
 class BaseModel:
     __tablename__ = None
+    id: int
+
     conn = config.get_db()
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def insert(self) -> int:
-        cursor = self.conn.cursor()
+    @classmethod
+    def insert(cls, **kwargs) -> int:
+        cursor = cls.conn.cursor()
 
-        # Extracting the attributes and values of the instance
-        attributes = [attr for attr in self.__dict__ if not attr.startswith('_')]
-        values = [getattr(self, attr) for attr in attributes]
+        # Extracting the attributes and values provided
+        attributes = list(kwargs.keys())
+        values = list(kwargs.values())
 
         # Formulating the SQL query
         placeholders = ', '.join(['%s'] * len(values))
         columns = ', '.join(attributes)
-        query = f"INSERT INTO {self.__tablename__} ({columns}) VALUES ({placeholders})"
+        query = (f"INSERT INTO {cls.__tablename__} ({columns}) "
+                 f"VALUES ({placeholders})")
 
         # Executing the query
         cursor.execute(query, tuple(values))
-        self.conn.commit()
+        cls.conn.commit()
 
-        # if your table has an auto-incrementing primary key.
-        self.id = cursor.lastrowid
+        # Getting the last inserted ID
+        last_inserted_id = cursor.lastrowid
 
         cursor.close()
-        return self.id
+        return last_inserted_id
 
     @classmethod
     def select(cls, **conditions) -> list:
@@ -56,15 +62,16 @@ class BaseModel:
             instances.append(instance)
 
         return instances
-    
+
     @classmethod
-    def select_first(cls, **conditions):
+    def select_first(cls, **conditions) -> object:
         cursor = cls.conn.cursor()
 
         # Formulating the SQL query
         if conditions:
-            condition_str = ' AND '.join([f"{key} = %s" for key in conditions])
-            query = f"SELECT * FROM {cls.__tablename__} WHERE {condition_str} LIMIT 1"
+            cond_str = ' AND '.join([f"{key} = %s" for key in conditions])
+            query = (f"SELECT * FROM {cls.__tablename__} WHERE {cond_str} "
+                     f"LIMIT 1")
             cursor.execute(query, tuple(conditions.values()))
         else:
             query = f"SELECT * FROM {cls.__tablename__} LIMIT 1"
@@ -72,17 +79,18 @@ class BaseModel:
 
         # Fetching the result and mapping it to a class instance
         row = cursor.fetchone()
+
         if row:
             instance = cls()
             columns = [desc[0] for desc in cursor.description]
             for attr, value in zip(columns, row):
                 setattr(instance, attr, value)
             return instance
-        else:
-            return None
-    
+
+        return None
+
     @classmethod
-    def delete(cls, **conditions):
+    def delete(cls, **conditions) -> None:
         cursor = cls.conn.cursor()
 
         # Formulating the SQL query
@@ -95,6 +103,30 @@ class BaseModel:
             query = f"DELETE FROM {cls.__tablename__}"
             cursor.execute(query)
 
+        cls.conn.commit()
+        cursor.close()
+
+    @classmethod
+    def update(cls, conditions: dict, new_values: dict) -> None:
+        cursor = cls.conn.cursor()
+
+        # Formulating the SQL query
+        if not conditions:
+            raise ValueError("Conditions must be provided for the update operation.")
+
+        # Formulating the SET part of the query
+        set_str = ', '.join([f"{key} = %s" for key in new_values])
+
+        # Formulating the WHERE part of the query
+        condition_str = ' AND '.join([f"{key} = %s" for key in conditions])
+
+        query = f"UPDATE {cls.__tablename__} SET {set_str} WHERE {condition_str}"
+
+        # Combining new values and conditions for the execute method
+        values = list(new_values.values()) + list(conditions.values())
+
+        # Executing the query
+        cursor.execute(query, tuple(values))
         cls.conn.commit()
         cursor.close()
 

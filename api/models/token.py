@@ -1,9 +1,16 @@
-from models.base_model import BaseModel
-from datetime import datetime, timedelta
 import secrets
+import dataclasses
+from datetime import datetime, timedelta
+from models.base_model import BaseModel
 
+@dataclasses.dataclass
 class Token(BaseModel):
+    """Representing table token"""
     __tablename__ = 'token'
+    user_id: int
+    token: str
+    expiration_date: str
+
     _token_delta = 12
 
     def __init__(self, **kwargs):
@@ -14,8 +21,8 @@ class Token(BaseModel):
 
     @classmethod
     def gen_random_token(cls):
-        return secrets.token_urlsafe(16);
+        return secrets.token_urlsafe(16)
 
     @classmethod
     def get_delta_date(cls):
-        return datetime.now() + timedelta(days=cls._token_delta);
+        return datetime.now() + timedelta(days=cls._token_delta)

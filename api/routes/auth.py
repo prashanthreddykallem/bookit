@@ -1,11 +1,17 @@
 from flask import Blueprint
-from controllers import authController
+from controllers import auth_controller
 
-blueprint = Blueprint('blueprint', __name__)
+auth_blueprint = Blueprint('auth', __name__)
 
-blueprint.route('/', methods=['GET'])(authController.index)
-blueprint.route('/', methods=['POST'])(authController.add_user)
-blueprint.route('/', methods=['PUT'])(authController.update_user)
-blueprint.route('/', methods=['DELETE'])(authController.delete_user)
-blueprint.route('/token', methods=['GET'])(authController.get_token)
-blueprint.route('/token', methods=['DELETE'])(authController.revoke_token)
+# myself
+auth_blueprint.route('/token', methods=['GET'])(auth_controller.get_my_token)
+auth_blueprint.route('/token', methods=['DELETE'])(auth_controller.revoke_my_token)
+auth_blueprint.route('/', methods=['GET'])(auth_controller.get_my_data)
+auth_blueprint.route('/', methods=['PUT'])(auth_controller.update_my_data)
+auth_blueprint.route('/', methods=['DELETE'])(auth_controller.close_my_account)
+
+# admin other users
+auth_blueprint.route('/manage/<int:user_id>', methods=['GET'])(auth_controller.get_data)
+auth_blueprint.route('/manage', methods=['POST'])(auth_controller.add_user)
+auth_blueprint.route('/manage/<int:user_id>', methods=['PUT'])(auth_controller.update_data)
+auth_blueprint.route('/manage/<int:user_id>', methods=['DELETE'])(auth_controller.close_account)

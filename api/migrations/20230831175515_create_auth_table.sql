@@ -10,9 +10,9 @@ CREATE TABLE `auth` (
 );
 
 INSERT INTO `auth` (`username`, `password`, `role`) VALUES
-('admin','c7ad44cbad762a5da0a452f9e854fdc1e0e7a52a38015f23f3eab1d80b931dd472634dfac71cd34ebc35d16ab7fb8a90c81f975113d6c7538dc69dd8de9077ec', 'admin');
+('admin','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin');
 INSERT INTO `auth` (`username`, `password`) VALUES
-('user','b14361404c078ffd549c03db443c3fede2f3e534d73f78f77301ed97d4a436a9fd9db05ee8b325c0ad36438b43fec8510c204fc1c1edb21d0941c00e9e2c1ce2');
+('user','04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb');
 
 -- migrate:down
 SET FOREIGN_KEY_CHECKS=0; -- to disable them

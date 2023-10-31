@@ -112,7 +112,9 @@ class BaseModel:
 
         # Formulating the SQL query
         if not conditions:
-            raise ValueError("Conditions must be provided for the update operation.")
+            raise ValueError(
+                "Conditions must be provided for the update operation."
+            )
 
         # Formulating the SET part of the query
         set_str = ', '.join([f"{key} = %s" for key in new_values])
@@ -120,7 +122,10 @@ class BaseModel:
         # Formulating the WHERE part of the query
         condition_str = ' AND '.join([f"{key} = %s" for key in conditions])
 
-        query = f"UPDATE {cls.__tablename__} SET {set_str} WHERE {condition_str}"
+        query = (
+                f"UPDATE {cls.__tablename__} SET {set_str} "
+                f"WHERE {condition_str}"
+            )
 
         # Combining new values and conditions for the execute method
         values = list(new_values.values()) + list(conditions.values())

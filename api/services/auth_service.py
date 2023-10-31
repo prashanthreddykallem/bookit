@@ -63,7 +63,7 @@ def create_token_by_user_id(user_id: int) -> str:
     :returns: token
     :raises Exception: if not valid user_id
     """
-    my_token = Token.gen_random_token();
+    my_token = Token.gen_random_token()
     Token.insert(
         user_id=user_id,
         token=my_token

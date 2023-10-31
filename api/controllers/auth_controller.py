@@ -1,7 +1,7 @@
 #import json
 from flask_cors import cross_origin
-from middleware.auth import login_required, admin_required
 from flask import request, jsonify
+from middleware.auth import login_required, admin_required
 from models.auth import Auth
 from models.token import Token
 from services import auth_service
@@ -50,6 +50,7 @@ def update_my_data(user_id: int) -> dict:
 def close_my_account(user_id: int) -> dict:
     """Make user_id inactive"""
     Auth.update(conditions={'id': user_id}, new_values={'active': 0})
+    Token.delete(conditions={'user_id': user_id})
     return {'status': 'OK', 'user_id': user_id}
 
 # Admin actions
@@ -83,4 +84,5 @@ def update_data(admin_id: int, user_id: int) -> dict:
 def close_account(admin_id: int, user_id:int) -> dict:
     """Make user_id inactive"""
     Auth.update(conditions={'id': user_id}, new_values={'active': 0})
+    Token.delete(conditions={'user_id': user_id})
     return {'status': 'OK', 'user_id': user_id}

@@ -48,11 +48,11 @@ def get_notif_details(_, notification_id: int) -> dict:
 
 @cross_origin()
 @admin_required
-def add_notification(_, notification_id: int) -> dict:
+def add_notification(_) -> dict:
     """Add new notification"""
     # TODO: get data provided via json in the request body and
     # add new notification
-    return {'status': 'OK', 'id': notification_id}, 201
+    return {'status': 'OK'}, 201
 
 @cross_origin()
 @admin_required

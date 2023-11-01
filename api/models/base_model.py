@@ -37,7 +37,8 @@ class BaseModel:
         return last_inserted_id
 
     @classmethod
-    def select(cls, **conditions) -> list:
+    # pylint: disable=line-too-long
+    def select(cls, limit=None, offset=None, order_by=None, **conditions) -> list:
         cursor = cls.conn.cursor()
 
         # Formulating the SQL query
@@ -47,7 +48,18 @@ class BaseModel:
             cursor.execute(query, tuple(conditions.values()))
         else:
             query = f"SELECT * FROM {cls.__tablename__}"
-            cursor.execute(query)
+
+        # Adding an ORDER BY clause if order_by is specified
+        if order_by is not None:
+            query += f" ORDER BY {order_by}"
+
+        # Adding pagination clauses if limit and offset are specified
+        if limit is not None:
+            query += f" LIMIT {limit}"
+        if offset is not None:
+            query += f" OFFSET {offset}"
+
+        cursor.execute(query)
 
         # Fetching the results
         results = cursor.fetchall()
@@ -135,6 +147,19 @@ class BaseModel:
         cls.conn.commit()
         cursor.close()
 
-    def close_connection(self) -> None:
-        if self.conn.is_connected():
-            self.conn.close()
+    @classmethod
+    def exec_query(cls, query, params=None):
+        conn = config.get_db()
+        cursor = conn.cursor()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    @classmethod
+    def close_connection(cls) -> None:
+        if cls.conn.is_connected():
+            cls.conn.close()

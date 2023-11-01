@@ -1,31 +1,56 @@
 version: '3.8'
 services:
-  api:
-    container_name: api
+  bookit-api:
+    container_name: bookit-api
     build: ./api
     restart: on-failure
+    depends_on:
+      - bookit-database
     env_file:
       - .env
     volumes:
-      - ./api:/python-docker
+      - ${PWD}/api:/python-docker
     ports:
-      - 5000:5000
-#  website:
-#    container_name: website
-#    build: ./frontend
-#    env_file:
-#      - .env
-#    volumes:
-#      - ./frontend:/usr/share/nginx/html
-#    ports:
-#      - 8181:80
-  database:
-    container_name: database
+      - 8181:5000
+    networks:
+      - database-network
+      - default
+  website:
+    container_name: website
+    build: ./frontend
+    depends_on:
+      - bookit-api
+    env_file:
+      - .env
+    volumes:
+      - ${PWD}/frontend:/usr/share/nginx/html
+    ports:
+      - 8080:80
+    networks:
+      - default
+  bookit-database:
+    container_name: bookit-database
     image: mysql:8
     command: mysqld --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 1m
+      timeout: 30s
+      retries: 3
+      start_period: 10s
     env_file:
       - .env
-    ports:
-      - 3306:3306
+#    ports:
+#      - 3306:3306
     volumes:
-        - "./mysql:/var/lib/mysql:rw"
+        - "dbdata:/var/lib/mysql:rw"
+    networks:
+      - database-network
+      - default
+networks:
+  database-network:
+    name: bookit-network
+    driver: bridge
+volumes:
+  dbdata:
+    driver: local

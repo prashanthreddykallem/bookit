@@ -4,7 +4,7 @@ A full booking solution to manage and grow your business.
 Packed with all the tools you need to boost sales, manage your calendar and
 retain clients so you can focus on what you do best.
 
-## Setup
+## Setup Dev Environment
 
 This project need a database and two web server, one for the python API and the
 second one for the nginx web server that displays the frontend.
@@ -17,65 +17,53 @@ cp .env_demo .env
 ```
 
 All these containers are provisioned using docker. To start the dev environment
-run:
+just run:
 
 ```bash
 docker compose up -d
 ```
 
-In the first run, execute the migrations below to set up the database.
+Your developer environment should be up and runing, check:
 
-### Migrations
+- API: http://127.0.0.1:8181/healthcheck/
+- FrontEnd: http://127.0.0.1:8080/
+
+**Usefull commands**:
+
+- Turn on: `docker compose up -d`
+- Turn off: `docker compose down`
+- Migrations: `docker exec -it bookit-api dbmate --help`
+- API Lint: `docker exec bookit-api pylint "*"`
+- Container logs: `docker compose logs -f`
+
+## Migrations
 
 The project database is set up using
 [Dbmate migrations](https://github.com/amacneil/dbmate), to execute the
 migrations run:
 
 ```bash
-dbmate up
-# OR
-docker run --rm -it --network=host -v "$(pwd)/migrations:/db" ghcr.io/amacneil/dbmate up
+docker exec -it bookit-api dbmate up
 ```
 
 Any changes to the database should be provisioned using migrations. To
 better understand now to create a new migration please follow the 
 [Dbmate docs](https://github.com/amacneil/dbmate/blob/main/README.md)
 
-### MySQL
+## API
 
-Since you now have the database server running as a container, you can access it
-using your preferred method. The server is running on:
-
-```markdown
-HOST: localhost
-PORT: 3306
-USER: root
-PASS: jux4mgm@ktn5mnk4YAT
-```
-
-### API
-
-The python API is running on port `5000` so you can access it at:
-`http://localhost:5000/`.
-
-A health check endpoint is provided so that you can check if everything is
-running smoothly: http://localhost:5000/healthcheck
-
-### Frontend
-
-The app frontend will run on port `8181`so you can access it at:
+The python API is running on port `8181` so you can access it at:
 `http://localhost:8181/`.
 
+A health check endpoint is provided so that you can check if everything is
+running smoothly: http://localhost:8181/healthcheck
+
+## Frontend
+
+The app frontend will run on port `8080`so you can access it at:
+`http://localhost:8080/`.
+
 ![demo img](demo.jpg)
-
-## Dev environment
-
-After the initial setup, you just need to `docker compose up -d` to start the
-containers, and `docker compose down` to stop it.
-
-You can always use `docker ps` to check if the containers are running.
-
-`docker compose logs -f` allow you to keep a look in the logs.
 
 ## Contribute
 

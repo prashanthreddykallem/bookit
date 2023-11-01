@@ -28,6 +28,6 @@ def get_db():
 
         return connection
     except Error as e:
-        print(f"Error while connecting to MySQL: {e}")
+        print(f"ERROR: Database connection failed: {e}")
         return None
   

@@ -26,7 +26,7 @@ def get_my_token() -> dict:
 # pylint: disable=unused-argument
 def revoke_my_token(user_id: int) -> dict:
     """Delete token for user"""
-    token = request.args.get('token')
+    token = request.headers.get('Authorization').split()[1]
     auth_service.revoke_token(token)
 
     return {'status': 'OK'}, 200

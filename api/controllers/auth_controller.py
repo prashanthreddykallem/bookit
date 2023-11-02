@@ -1,9 +1,11 @@
 from flask_cors import cross_origin
 from flask import request, jsonify
+from schemas.schemas import AuthRequestModel
 from middleware.auth import login_required, admin_required
 from models.auth import Auth
 from models.token import Token
 from services import auth_service
+from flask_pydantic import validate
 
 # User actions
 @cross_origin()
@@ -77,10 +79,12 @@ def get_users_list(_) -> dict:
 
 @cross_origin()
 @admin_required
-def add_user(_) -> dict:
+@validate(body = AuthRequestModel)
+def add_user() -> dict:
     """Fetch user_id data"""
-    # TODO: add new user to db based on json body data
-    return {'status': 'OK'}
+    user_id = Auth.insert(**dict(request.body_params))
+    user = Auth.select_first(id=user_id)
+    return jsonify(user), 200
 
 @cross_origin()
 @login_required

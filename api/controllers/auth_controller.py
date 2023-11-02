@@ -6,6 +6,7 @@ from models.auth import Auth
 from models.token import Token
 from services import auth_service
 from flask_pydantic import validate
+from mysql.connector import IntegrityError 
 
 # User actions
 @cross_origin()
@@ -82,9 +83,14 @@ def get_users_list(_) -> dict:
 @validate(body = AuthRequestModel)
 def add_user() -> dict:
     """Fetch user_id data"""
-    user_id = Auth.insert(**dict(request.body_params))
-    user = Auth.select_first(id=user_id)
-    return jsonify(user), 200
+    try:
+        user_id = Auth.insert(**dict(request.body_params))
+        user = Auth.select_first(id=user_id)
+        return jsonify(user), 200
+    except IntegrityError as e:
+        return {"error":'Duplicate username entered'},409
+    except Exception as e:
+        return {"error":"Unknown Error Occurred"}, 500
 
 @cross_origin()
 @login_required
